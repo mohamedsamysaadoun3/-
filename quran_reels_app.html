@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منشئ الريلز القرآنية الاحترافي</title>
+    
+    <!-- خطوط عربية احترافية من Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@300;400;600;800&family=Noto+Naskh+Arabic:wght@400;500;700&family=Reem+Kufi:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- مكتبة لتحويل الـ HTML إلى صورة -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --panel-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            outline: none;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* --- Sidebar (Controls) --- */
+        .sidebar {
+            width: 400px;
+            background: var(--panel-bg);
+            border-left: 1px solid var(--border-color);
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            z-index: 10;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo span { color: var(--primary-color); }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .control-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="text"], 
+        input[type="number"], 
+        select, 
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-family: 'Cairo', sans-serif;
+            font-size: 14px;
+            background: #fff;
+            transition: all 0.2s;
+            color: var(--text-main);
+        }
+
+        textarea { resize: vertical; min-height: 80px; }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .range-slider {
+            width: 100%;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        .range-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .color-picker-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="color"] {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            background: none;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius);
+            font-family: 'Cairo', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+        }
+
+        /* --- Main Preview Area --- */
+        .main-area {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f1f5f9;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* Phone Container (9:16 Aspect Ratio) */
+        .phone-mockup {
+            width: 360px; /* Base width for preview */
+            aspect-ratio: 9 / 16;
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+
+        /* The Actual Canvas to Export */
+        #reel-canvas {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+            overflow: hidden;
+        }
+
+        /* Overlay for readability */
+        .overlay {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 1;
+            transition: background 0.3s;
+        }
+
+        .content-layer {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .quran-text {
+            font-family: 'Amiri', serif;
+            line-height: 2.2;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .surah-info {
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            letter-spacing: 1px;
+            opacity: 0.9;
+            text-transform: uppercase;
+            font-size: 14px;
+            margin-top: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .surah-info::before, .surah-info::after {
+            content: '';
+            width: 30px;
+            height: 1px;
+            background: currentColor;
+            opacity: 0.6;
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: 20px;
+            left: 0; 
+            right: 0;
+            text-align: center;
+            font-size: 12px;
+            opacity: 0.7;
+            z-index: 2;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* Utility Classes for Fonts */
+        .font-amiri { font-family: 'Amiri', serif; }
+        .font-naskh { font-family: 'Noto Naskh Arabic', serif; }
+        .font-reef { font-family: 'Reem Kufi', sans-serif; }
+        .font-cairo { font-family: 'Cairo', sans-serif; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            body { flex-direction: column-reverse; overflow: auto; }
+            .sidebar { width: 100%; height: auto; border-left: none; border-top: 1px solid var(--border-color); }
+            .main-area { min-height: 600px; }
+            .phone-mockup { width: 280px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Controls -->
+    <div class="sidebar">
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><path d="M12 6v6l4 2"/></svg>
+            <span>QuranReels</span> Pro
+        </div>
+
+        <!-- Content Section -->
+        <div class="control-group">
+            <div class="control-label">النص القرآني</div>
+            <textarea id="quranText" placeholder="اكتب الآية هنا...">إِنَّ مَعَ الْعُسْرِ يُسْرًا</textarea>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="surahName" placeholder="اسم السورة" value="سورة الشرح">
+                <input type="text" id="ayahNumber" placeholder="الآية" value="٥" style="width: 80px;">
+            </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color);">
+
+        <!-- Typography Section -->
+        <div class="control-group">
+            <div class="control-label">الخطوط والألوان</div>
+            
+            <label style="font-size: 12px; color: var(--text-muted);">نوع الخط</label>
+            <select id="fontFamily">
+                <option value="'Amiri', serif">أميري (كلاسيكي)</option>
+                <option value="'Noto Naskh Arabic', serif">نسخ (واضح)</option>
+                <option value="'Reem Kufi', sans-serif">ريم كوفي (عصري)</option>
+                <option value="'Cairo', sans-serif">كايرو (هندسي)</option>
+            </select>
+
+            <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                <span style="font-size: 12px; width: 60px;">الحجم</span>
+                <input type="range" id="fontSize" min="20" max="80" value="42" class="range-slider">
+            </div>
+
+            <div class="color-picker-wrapper" style="margin-top: 10px;">
+                <input type="color" id="textColor" value="#ffffff">
+                <span style="font-size: 13px;">لون النص</span>
+            </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--border-color);">
+
+        <!-- Background Section -->
+        <div class="control-group">
+            <div class="control-label">الخلفية</div>
+            
+            <select id="bgType">
+                <option value="gradient">تدرج لوني (Gradient)</option>
+                <option value="image">صورة مخصصة</option>
+                <option value="solid">لون مصمت</option>
+            </select>
+
+            <div id="gradientControls" class="color-picker-wrapper" style="margin-top: 10px; gap: 5px;">
+                <input type="color" id="bgColor1" value="#1e293b">
+                <input type="color" id="bgColor2" value="#0f172a">
+                <span style="font-size: 12px;">تدرج</span>
+            </div>
+
+            <div id="imageControls" style="display: none; margin-top: 10px;">
+                <button class="btn btn-secondary" onclick="document.getElementById('bgImageInput').click()">
+                    📁 اختر صورة
+                </button>
+                <input type="file" id="bgImageInput" accept="image/*" style="display: none;">
+                <input type="range" id="bgOpacity" min="0" max="1" step="0.1" value="0.6" class="range-slider" style="margin-top: 10px;">
+                <span style="font-size: 11px; color: var(--text-muted);">شفافية الصورة</span>
+            </div>
+
+            <div id="solidControls" style="display: none; margin-top: 10px;" class="color-picker-wrapper">
+                <input type="color" id="solidColor" value="#1e293b">
+                <span style="font-size: 13px;">لون الخلفية</span>
+            </div>
+            
+            <div class="color-picker-wrapper" style="margin-top: 10px;">
+                <input type="color" id="overlayColor" value="#000000">
+                <span style="font-size: 13px;">لون الطبقة الداكنة</span>
+                <input type="range" id="overlayOpacity" min="0" max="0.9" step="0.05" value="0.4" class="range-slider" style="width: 80px;">
+            </div>
+        </div>
+
+        <div style="margin-top: auto;">
+            <button class="btn btn-primary" id="downloadBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                تحميل التصميم (HD)
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Preview -->
+    <div class="main-area">
+        <div class="phone-mockup">
+            <div id="reel-canvas">
+                <div class="overlay" id="previewOverlay"></div>
+                
+                <div class="content-layer">
+                    <div id="previewText" class="quran-text font-amiri">إِنَّ مَعَ الْعُسْرِ يُسْرًا</div>
+                    <div id="previewInfo" class="surah-info">
+                        <span id="previewSurah">سورة الشرح</span>
+                        <span id="previewAyah">٥</span>
+                    </div>
+                </div>
+
+                <div class="watermark">تم التصميم عبر QuranReels</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Elements
+        const inputs = {
+            text: document.getElementById('quranText'),
+            surah: document.getElementById('surahName'),
+            ayah: document.getElementById('ayahNumber'),
+            font: document.getElementById('fontFamily'),
+            size: document.getElementById('fontSize'),
+            color: document.getElementById('textColor'),
+            bgType: document.getElementById('bgType'),
+            bg1: document.getElementById('bgColor1'),
+            bg2: document.getElementById('bgColor2'),
+            bgImage: document.getElementById('bgImageInput'),
+            bgOpacity: document.getElementById('bgOpacity'),
+            solidColor: document.getElementById('solidColor'),
+            overlayColor: document.getElementById('overlayColor'),
+            overlayOpacity: document.getElementById('overlayOpacity')
+        };
+
+        const preview = {
+            canvas: document.getElementById('reel-canvas'),
+            text: document.getElementById('previewText'),
+            info: document.getElementById('previewInfo'),
+            surah: document.getElementById('previewSurah'),
+            ayah: document.getElementById('previewAyah'),
+            overlay: document.getElementById('previewOverlay')
+        };
+
+        const controls = {
+            gradient: document.getElementById('gradientControls'),
+            image: document.getElementById('imageControls'),
+            solid: document.getElementById('solidControls')
+        };
+
+        // State
+        let currentBgImage = null;
+
+        // Functions
+        function updateDesign() {
+            // Text Content
+            preview.text.textContent = inputs.text.value;
+            preview.surah.textContent = inputs.surah.value;
+            preview.ayah.textContent = inputs.ayah.value ? `(${inputs.ayah.value})` : '';
+
+            // Typography
+            preview.text.style.fontFamily = inputs.font.value;
+            preview.text.style.fontSize = `${inputs.size}px`;
+            preview.text.style.color = inputs.color.value;
+            preview.info.style.color = inputs.color.value;
+
+            // Overlay
+            preview.overlay.style.backgroundColor = inputs.overlayColor.value;
+            preview.overlay.style.opacity = inputs.overlayOpacity.value;
+
+            // Background Logic
+            const type = inputs.bgType.value;
+            
+            // Hide all first
+            controls.gradient.style.display = 'none';
+            controls.image.style.display = 'none';
+            controls.solid.style.display = 'none';
+
+            if (type === 'gradient') {
+                controls.gradient.style.display = 'flex';
+                preview.canvas.style.background = `linear-gradient(135deg, ${inputs.bg1.value}, ${inputs.bg2.value})`;
+            } else if (type === 'solid') {
+                controls.solid.style.display = 'flex';
+                preview.canvas.style.background = inputs.solidColor.value;
+            } else if (type === 'image') {
+                controls.image.style.display = 'block';
+                if (currentBgImage) {
+                    preview.canvas.style.background = `url(${currentBgImage}) no-repeat center center/cover`;
+                    // Apply opacity via a pseudo-element logic or just rely on overlay
+                    // Since we can't opacity the background-image property directly easily without extra divs,
+                    // we rely on the overlay we already have, but let's try to dim the image itself if needed.
+                    // For simplicity in this single file, the overlay handles darkening.
+                }
+            }
+        }
+
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    currentBgImage = event.target.result;
+                    updateDesign();
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function downloadDesign() {
+            const btn = document.getElementById('downloadBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'جاري المعالجة...';
+            btn.disabled = true;
+
+            // We need to temporarily scale up the canvas for high resolution export
+            const scale = 2; // 2x resolution for retina/HD
+            const width = preview.canvas.offsetWidth;
+            const height = preview.canvas.offsetHeight;
+
+            html2canvas(preview.canvas, {
+                scale: scale,
+                useCORS: true,
+                backgroundColor: null,
+                width: width,
+                height: height,
+                scrollX: -window.scrollX,
+                scrollY: -window.scrollY
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `quran-reel-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }).catch(err => {
+                console.error(err);
+                alert('حدث خطأ أثناء التحميل');
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            });
+        }
+
+        // Event Listeners
+        Object.values(inputs).forEach(input => {
+            if(input) input.addEventListener('input', updateDesign);
+        });
+
+        inputs.bgType.addEventListener('change', updateDesign);
+        inputs.bgImage.addEventListener('change', handleImageUpload);
+        document.getElementById('downloadBtn').addEventListener('click', downloadDesign);
+
+        // Initialize
+        updateDesign();
+
+    </script>
+</body>
+</html>
